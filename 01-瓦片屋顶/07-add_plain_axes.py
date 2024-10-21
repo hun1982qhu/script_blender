@@ -362,13 +362,23 @@ classes = [
 
 
 def register():
+    # 这里 classes 是一个包含多个自定义类的列表，
+    # 例如 CustomCubeProperties、OBJECT_PT_CustomCubePanel、MESH_OT_CreateCustomCube 等。
+    # 这段代码通过 bpy.utils.register_class(cls) 将这些类逐一注册到 Blender 系统中，
+    # 使它们在 Blender 中可以作为自定义面板、操作和属性使用。
     for cls in classes:
         bpy.utils.register_class(cls)
-
+    # Blender 使用 PointerProperty 来定义属性，这些属性会被添加到 bpy.types.Scene 中，从而让它们可以在整个场景中被访问。这三行代码具体的作用是：
+    # bpy.types.Scene.custom_cube_props:
+    # 定义并注册了一个新的属性 custom_cube_props，其类型为 CustomCubeProperties。这是自定义的属性组，包含了瓦片（或立方体）的尺寸、位置、旋转等信息，用户在界面中调整这些值时，Blender 会调用相应的更新函数。
     bpy.types.Scene.custom_cube_props = bpy.props.PointerProperty(
         type=CustomCubeProperties
     )
+    # bpy.types.Scene.custom_cube_ref:
+    # 定义并注册了一个新的属性 custom_cube_ref，它是一个指向 Blender 对象（bpy.types.Object）的指针。这个属性用来存储生成的自定义立方体对象的引用，以便在场景中可以访问和修改该对象。
     bpy.types.Scene.custom_cube_ref = bpy.props.PointerProperty(type=bpy.types.Object)
+    # bpy.types.Scene.custom_empty_ref:
+    # 类似地，custom_empty_ref 是一个指向 bpy.types.Object 的指针，用来存储创建的 Empty_Plain_Axes 对象的引用。这样做的目的是在场景中保存 Empty 的引用，以便对其进行位置和旋转的更新。
     bpy.types.Scene.custom_empty_ref = bpy.props.PointerProperty(type=bpy.types.Object)
 
 
