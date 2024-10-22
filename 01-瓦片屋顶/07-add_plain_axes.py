@@ -3,13 +3,15 @@ import math
 import bmesh
 import mathutils
 
+
 # {{{ 定义属性类
 
 
 class CustomCubeProperties(bpy.types.PropertyGroup):
     """"""
 
-    # 尺寸属性
+    # {{{ 尺寸属性
+
     length: bpy.props.FloatProperty(
         name="长度",
         default=0.36,
@@ -32,7 +34,10 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
         update=lambda self, context: update_cube(context),
     )
 
-    # 位置属性
+    # }}} 尺寸属性
+
+    # {{{ 位置属性
+
     pos_x: bpy.props.FloatProperty(
         name="位置 X",
         default=0.0,
@@ -49,7 +54,10 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
         update=lambda self, context: update_cube_transform(context),
     )
 
-    # 旋转属性（以度为单位）
+    # }}} 位置属性
+
+    # {{{ 旋转属性（以度为单位）
+
     rot_x: bpy.props.FloatProperty(
         name="旋转 X",
         default=0.0,
@@ -66,7 +74,10 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
         update=lambda self, context: update_cube_transform(context),
     )
 
-    # Empty 距离
+    # }}} 旋转属性（以度为单位）
+
+    # {{{ Empty 距离
+
     empty_distance: bpy.props.FloatProperty(
         name="Empty 距离",
         default=0.1,
@@ -75,7 +86,10 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
         update=lambda self, context: update_empty_transform(context),
     )
 
-    # 折叠/展开属性
+    # }}} Empty 距离
+
+    # {{{ 折叠/展开属性
+
     show_size_settings: bpy.props.BoolProperty(
         name="尺寸设置",
         default=True,
@@ -89,6 +103,8 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
         default=True,
     )
 
+    # }}} 折叠/展开属性
+
 
 # }}} 定义属性类
 
@@ -98,17 +114,24 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
 class OBJECT_PT_CustomCubePanel(bpy.types.Panel):
     """"""
 
+    # {{{ 设置面板的名称、标签、ID、位置、类别等信息
+
     bl_label = "自定义瓦片设置"
     bl_idname = "OBJECT_PT_custom_cube_panel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "工具"
 
+    # }}} 设置面板的名称、标签、ID、位置、类别等信息
+
+    # {{{ 定义面板的布局
+
     def draw(self, context):
         layout = self.layout
         props = context.scene.custom_cube_props
 
-        # 尺寸设置
+        # {{{ 尺寸设置
+
         box = layout.box()
         row = box.row()
         row.prop(
@@ -125,7 +148,10 @@ class OBJECT_PT_CustomCubePanel(bpy.types.Panel):
             sub_box.prop(props, "width")
             sub_box.prop(props, "height")
 
-        # 位置设置
+        # }}} 尺寸设置
+
+        # {{{ 位置设置
+
         box = layout.box()
         row = box.row()
         row.prop(
@@ -142,7 +168,10 @@ class OBJECT_PT_CustomCubePanel(bpy.types.Panel):
             sub_box.prop(props, "pos_y")
             sub_box.prop(props, "pos_z")
 
-        # 旋转设置
+        # }}} 位置设置
+
+        # {{{ 旋转设置
+
         box = layout.box()
         row = box.row()
         row.prop(
@@ -159,7 +188,10 @@ class OBJECT_PT_CustomCubePanel(bpy.types.Panel):
             sub_box.prop(props, "rot_y")
             sub_box.prop(props, "rot_z")
 
-        # Empty Distance 设置
+        # }}} 旋转设置
+
+        # {{{ Empty Distance 设置
+
         box = layout.box()
         row = box.row()
         row.label(text="Empty 距离")
@@ -173,17 +205,27 @@ class OBJECT_PT_CustomCubePanel(bpy.types.Panel):
         # 添加删除面板的按钮
         layout.operator("object.delete_custom_panel", text="删除面板")
 
+        # }}} Empty Distance 设置
+
+    # }}} 定义面板的布局
+
 
 # }}} 创建自定义面板类
 
-# {{{ 操作：创建自定义立方体
+# {{{ 操作：创建自定义对象
 
 
 class MESH_OT_CreateCustomCube(bpy.types.Operator):
     """"""
 
+    # {{{ 设置操作的 ID 和标签
+
     bl_idname = "mesh.create_custom_cube"
     bl_label = "创建自定义瓦片"
+
+    # }}} 设置操作的 ID 和标签
+
+    # {{{ 执行操作的函数
 
     def execute(self, context):
         props = context.scene.custom_cube_props
@@ -197,34 +239,52 @@ class MESH_OT_CreateCustomCube(bpy.types.Operator):
         )
         return {"FINISHED"}
 
+    # }}} 执行操作的函数
 
-# }}} 操作：创建自定义立方体
 
-# {{{ 操作：删除自定义立方体
+# }}} 操作：创建自定义对象
+
+# {{{ 操作：删除自定义对象
 
 
 class MESH_OT_DeleteCustomCube(bpy.types.Operator):
     """"""
 
+    # {{{ 设置操作的 ID 和标签
+
     bl_idname = "mesh.delete_custom_cube"
     bl_label = "删除自定义瓦片"
+
+    # }}} 设置操作的 ID 和标签
+
+    # {{{ 执行操作的函数
 
     def execute(self, context):
         delete_cube()
         delete_empty()
         return {"FINISHED"}
 
+    # }}} 执行操作的函数
 
-# }}} 操作：删除自定义立方体
+
+# }}} 操作：删除自定义对象
 
 # {{{ 操作：删除自定义面板
 
 
 class MESH_OT_DeletePanel(bpy.types.Operator):
-    """删除自定义面板"""
+    """
+    删除自定义面板
+    """
+
+    # {{{ 设置操作的 ID 和标签
 
     bl_idname = "object.delete_custom_panel"
     bl_label = "删除面板"
+
+    # }}} 设置操作的 ID 和标签
+
+    # {{{ 执行操作的函数
 
     def execute(self, context):
         # 注销自定义面板类，删除面板
@@ -235,6 +295,8 @@ class MESH_OT_DeletePanel(bpy.types.Operator):
             self.report({"WARNING"}, f"面板未找到或已删除: {e}")
         return {"FINISHED"}
 
+    # }}} 执行操作的函数
+
 
 # }}} 操作：删除自定义面板
 
@@ -243,42 +305,65 @@ class MESH_OT_DeletePanel(bpy.types.Operator):
 
 def create_cube(length, width, height, position, rotation, empty_distance):
     """"""
-    # 删除现有的立方体和 Empty
+    # {{{ 删除现有的立方体和 Empty
+
     delete_cube()
     delete_empty()
 
-    # 创建一个新的网格对象
+    # }}} 删除现有的立方体和 Empty
+
+    # {{{ 创建一个新的网格对象
+
     mesh = bpy.data.meshes.new("Custom_Cube_Mesh")
     cube = bpy.data.objects.new("Custom_Cube", mesh)
     bpy.context.collection.objects.link(cube)
 
-    # 使用 bmesh 创建立方体
+    # }}} 创建一个新的网格对象
+
+    # {{{ 使用 bmesh 创建立方体
+
     bm = bmesh.new()
     bmesh.ops.create_cube(bm, size=1.0)
 
-    # 缩放立方体到指定尺寸
+    # }}} 使用 bmesh 创建立方体
+
+    # {{{ 缩放立方体到指定尺寸
+
     for v in bm.verts:
         v.co.x *= width / 2
         v.co.y *= length / 2
         v.co.z *= height / 2
 
-    # 定义一个函数来在指定轴上进行细分
+    # }}} 缩放立方体到指定尺寸
+
+    # {{{ 定义一个函数来在指定轴上进行细分
+
     def subdivide_edges(bm, axis, cuts):
         edges_to_subdivide = [
             e for e in bm.edges if abs(e.verts[0].co[axis] - e.verts[1].co[axis]) != 0
         ]
         bmesh.ops.subdivide_edges(bm, edges=edges_to_subdivide, cuts=cuts)
 
+    # }}} 定义一个函数来在指定轴上进行细分
+
+    # {{{ 在X轴和Y轴分别添加60和30个环切
+
     # 在 X 轴上添加60个环切
     subdivide_edges(bm, axis=0, cuts=30)
     # 在 Y 轴上添加30个环切
     subdivide_edges(bm, axis=1, cuts=60)
 
-    # 更新网格并释放 bmesh
+    # }}} 在X轴和Y轴分别添加60和30个环切
+
+    # {{{ 更新网格并释放 bmesh
+
     bm.to_mesh(mesh)
     bm.free()
 
-    # 设置立方体的位置和旋转
+    # }}} 更新网格并释放 bmesh
+
+    # {{{ 设置立方体的位置和旋转
+
     cube.location = position
     cube.rotation_euler = (
         math.radians(rotation[0]),
@@ -286,17 +371,28 @@ def create_cube(length, width, height, position, rotation, empty_distance):
         math.radians(rotation[2]),
     )
 
-    # 创建一个 Empty Plain Axes
+    # }}} 设置立方体的位置和旋转
+
+    # {{{ 创建一个 Empty Plain Axes
+
     empty = bpy.data.objects.new("Empty_Plain_Axes", None)
     empty.empty_display_type = "PLAIN_AXES"
     bpy.context.collection.objects.link(empty)
 
-    # 更新 Empty 的位置和法线方向
+    # }}} 创建一个 Empty Plain Axes
+
+    # {{{ 更新 Empty 的位置和法线方向
+
     update_empty_position(cube, empty, empty_distance)
 
-    # 保存立方体和 Empty 的引用到自定义属性
+    # }}} 更新 Empty 的位置和法线方向
+
+    # {{{ 保存立方体和 Empty 的引用到自定义属性
+
     bpy.context.scene.custom_cube_ref = cube
     bpy.context.scene.custom_empty_ref = empty
+
+    # }}} 保存立方体和 Empty 的引用到自定义属性
 
 
 # }}} 创建一个带有60×30环切的立方体，并生成一个Empty
@@ -311,7 +407,11 @@ def delete_cube():
         bpy.data.objects.remove(obj, do_unlink=True)
 
 
-# 删除名为 "Empty_Plain_Axes" 的对象
+# }}} 删除名为 "Custom_Cube" 的对象
+
+# {{{ 删除名为 "Empty_Plain_Axes" 的对象
+
+
 def delete_empty():
     """"""
     obj = bpy.data.objects.get("Empty_Plain_Axes")
@@ -319,7 +419,7 @@ def delete_empty():
         bpy.data.objects.remove(obj, do_unlink=True)
 
 
-# }}} 删除对象
+# }}} 删除名为 "Empty_Plain_Axes" 的对象
 
 # {{{ 更新 Empty 位置函数
 
@@ -382,6 +482,11 @@ def register():
     bpy.types.Scene.custom_empty_ref = bpy.props.PointerProperty(type=bpy.types.Object)
 
 
+# }}} 注册类
+
+# {{{ 注销类
+
+
 def unregister():
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
@@ -391,7 +496,8 @@ def unregister():
     del bpy.types.Scene.custom_empty_ref
 
 
-# }}} 注册类
+# }}} 注销类
+
 
 if __name__ == "__main__":
     register()
