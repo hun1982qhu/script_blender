@@ -305,6 +305,7 @@ class MESH_OT_DeletePanel(bpy.types.Operator):
 
 def create_cube(length, width, height, position, rotation, empty_distance):
     """"""
+
     # {{{ 删除现有的立方体和 Empty
 
     delete_cube()
