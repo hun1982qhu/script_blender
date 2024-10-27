@@ -8,7 +8,8 @@ import bmesh
 class CustomCubeProperties(bpy.types.PropertyGroup):
     """"""
 
-    # 尺寸属性
+    # {{{ 尺寸属性
+
     length: bpy.props.FloatProperty(
         name="长度",
         default=0.36,
@@ -31,7 +32,10 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
         update=lambda self, context: update_cube(context),
     )
 
-    # 位置属性
+    # }}} 尺寸属性
+
+    # {{{ 位置属性
+
     pos_x: bpy.props.FloatProperty(
         name="位置 X",
         default=0.0,
@@ -48,7 +52,10 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
         update=lambda self, context: update_cube_transform(context),
     )
 
-    # 旋转属性（以度为单位）
+    # }}} 位置属性
+
+    # {{{ 旋转属性（以度为单位）
+
     rot_x: bpy.props.FloatProperty(
         name="旋转 X",
         default=0.0,
@@ -65,7 +72,10 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
         update=lambda self, context: update_cube_transform(context),
     )
 
-    # 折叠/展开属性
+    # }}} 旋转属性（以度为单位）
+
+    # {{{ 折叠/展开属性
+
     show_size_settings: bpy.props.BoolProperty(
         name="尺寸设置",
         default=True,
@@ -79,6 +89,8 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
         default=True,
     )
 
+    # }}} 折叠/展开属性
+
 
 # }}} 定义属性类
 
@@ -88,17 +100,24 @@ class CustomCubeProperties(bpy.types.PropertyGroup):
 class OBJECT_PT_CustomCubePanel(bpy.types.Panel):
     """"""
 
+    # {{{ 设置面板的名称、标签、ID、位置、类别等信息
+
     bl_label = "自定义瓦片设置"
     bl_idname = "OBJECT_PT_custom_cube_panel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "工具"
+    bl_category = "Add Tile"
+
+    # }}} 设置面板的名称、标签、ID、位置、类别等信息
+
+    # {{{ 自定义面板布局
 
     def draw(self, context):
         layout = self.layout
         props = context.scene.custom_cube_props
 
-        # 尺寸设置
+        # {{{ 尺寸设置
+
         box = layout.box()
         row = box.row()
         row.prop(
@@ -115,7 +134,10 @@ class OBJECT_PT_CustomCubePanel(bpy.types.Panel):
             sub_box.prop(props, "width")
             sub_box.prop(props, "height")
 
-        # 位置设置
+        # }}} 尺寸设置
+
+        # {{{ 位置设置
+
         box = layout.box()
         row = box.row()
         row.prop(
@@ -132,7 +154,10 @@ class OBJECT_PT_CustomCubePanel(bpy.types.Panel):
             sub_box.prop(props, "pos_y")
             sub_box.prop(props, "pos_z")
 
-        # 旋转设置
+        # }}} 位置设置
+
+        # {{{ 旋转设置
+
         box = layout.box()
         row = box.row()
         row.prop(
@@ -149,13 +174,27 @@ class OBJECT_PT_CustomCubePanel(bpy.types.Panel):
             sub_box.prop(props, "rot_y")
             sub_box.prop(props, "rot_z")
 
-        # 创建按钮来生成立方体
+        # }}} 旋转设置
+
+        # {{{ 创建按钮来生成立方体
+
         layout.operator("mesh.create_custom_cube", text="创建瓦片")
-        # 创建按钮来删除立方体
+
+        # }}} 创建按钮来生成立方体
+
+        # {{{ 创建按钮来删除立方体
+
         layout.operator("mesh.delete_custom_cube", text="删除瓦片")
 
-        # 添加删除面板的按钮
+        # }}} 创建按钮来删除立方体
+
+        # {{{ 添加删除面板的按钮
+
         layout.operator("object.delete_custom_panel", text="删除面板")
+
+        # }}} 添加删除面板的按钮
+
+    # }}} 自定义面板布局
 
 
 # }}} 创建自定义面板类
