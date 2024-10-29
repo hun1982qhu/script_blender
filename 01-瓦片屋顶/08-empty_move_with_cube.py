@@ -382,11 +382,16 @@ def create_cube(length, width, height, position, rotation, empty_distance):
 
     # }}} 创建一个 Empty Plain Axes
 
-    # {{{ 更新 Empty 的位置和法线方向
+    # {{{ 设置 empty 的默认初始位置在cube的yz平面的法线方向上
 
-    update_empty_position(cube, empty, empty_distance)
+    # 在cube 的x轴方向偏移指定距离
+    offset = empty_distance  # 可以在面板中调整empty_distance数值
+    normal_vector = mathutils.Vector((1, 0, 0))  # cube的x轴方向
+    empty.location = (
+        cube.location + (cube.matrix_world.to_quaternion() @ normal_vector) * offset
+    )
 
-    # }}} 更新 Empty 的位置和法线方向
+    # }}} 设置 empty 的默认初始位置在cube的yz平面的法线方向上
 
     # {{{ 保存立方体和 Empty 的引用到自定义属性
 
@@ -422,15 +427,70 @@ def delete_empty():
 
 # }}} 删除名为 "Empty_Plain_Axes" 的对象
 
+# {{{ 更新立方体尺寸的函数
+
+
+def update_cube(context):
+    """"""
+    cube = getattr(bpy.context.scene, "custom_cube_ref", None)
+    if cube and cube.name == "Custom_Cube":
+        props = context.scene.custom_cube_props
+        # 重新创建立方体以更新尺寸和环切
+        create_cube(
+            props.length,
+            props.width,
+            props.height,
+            (props.pos_x, props.pos_y, props.pos_z),
+            (props.rot_x, props.rot_y, props.rot_z),
+        )
+
+        # 调用 update_empty_transform 函数更新 Empty 的位置
+        # update_empty_transform(context)
+
+
+# }}} 更新立方体尺寸的函数
+
+# {{{ 更新立方体位置和旋转的函数
+
+
+def update_cube_transform(context):
+    """"""
+    cube = getattr(bpy.context.scene, "custom_cube_ref", None)
+    if cube and cube.name == "Custom_Cube":
+        props = context.scene.custom_cube_props
+        # 更新立方体的位置
+        cube.location = (props.pos_x, props.pos_y, props.pos_z)
+        # 更新立方体的旋转（将度数转换为弧度）
+        cube.rotation_euler = (
+            math.radians(props.rot_x),
+            math.radians(props.rot_y),
+            math.radians(props.rot_z),
+        )
+
+        # 调用 update_empty_transform 函数更新 Empty 的位置
+        update_empty_transform(context)
+
+
+# }}} 更新立方体位置和旋转的函数
+
 # {{{ 更新 Empty 位置函数
 
 
 def update_empty_position(cube, empty, distance):
-    """"""
-    # 计算法线方向（cube 长和宽所在平面的法线）
-    normal_vector = cube.matrix_world.to_quaternion() @ mathutils.Vector((0, 0, 1))
-    # 更新 Empty 的位置，确保其在法线方向偏移指定距离
-    empty.location = cube.location + normal_vector * distance
+    """
+    更新 Empty 的位置，确保其在法线方向偏移指定距离
+    """
+    # 确定参考平面的位置。参考平面法线为`-x` 方向，所以定义其中心在局部空间的(-width/2, 0, 0)位置
+    b_center_local = mathutils.Vector((-cube.dimensions.x / 2, 0, 0))
+
+    # 将局部参考平面中心转换为世界空间座标
+    b_center_world = cube.matrix_world @ (b_center_local * cube.dimensions.x)
+
+    # 计算参考平面的法线向量（在局部空间中为`-x` 方向）
+    normal_vector = cube.matrix_world.to_quaternion() @ mathutils.Vector((-1, 0, 0))
+
+    # 将 Empty 的位置设置为参考平面的中心偏移指定距离的位置
+    empty.location = b_center_world + normal_vector * distance
 
 
 # }}} 更新 Empty 位置函数

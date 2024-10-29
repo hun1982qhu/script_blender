@@ -106,7 +106,7 @@ class OBJECT_PT_CustomCubePanel(bpy.types.Panel):
     bl_idname = "OBJECT_PT_custom_cube_panel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "Add Tile"
+    bl_category = "工具"
 
     # }}} 设置面板的名称、标签、ID、位置、类别等信息
 
