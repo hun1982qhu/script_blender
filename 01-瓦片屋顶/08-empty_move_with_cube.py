@@ -481,7 +481,7 @@ def update_empty_position(cube, empty, distance):
     更新 Empty 的位置，确保其在法线方向偏移指定距离
     """
     # 确定参考平面的位置。参考平面法线为`-x` 方向，所以定义其中心在局部空间的(-width/2, 0, 0)位置
-    b_center_local = mathutils.Vector((-cube.dimensions.x / 2, 0, 0))
+    b_center_local = mathutils.Vector((-distance / 2, 0, 0))
 
     # 将局部参考平面中心转换为世界空间座标
     b_center_world = cube.matrix_world @ (b_center_local * cube.dimensions.x)
